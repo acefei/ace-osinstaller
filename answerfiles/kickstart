@@ -1,0 +1,60 @@
+#version=RHEL8
+# You can change this as xvd* are simply the Xen disk storage devices
+ignoredisk --only-use=xvda
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=xvda
+autopart --type=lvm
+# Partition clearing information
+clearpart --all --initlabel --drives=xvda
+# Use text mode install
+text
+# AppStream is automatically added if redhat major is 8 or higher, URL contains "BaseOS" and AppStream repo is missing
+# Use network installation
+url --url="http://mirror.centos.org/centos/8/BaseOS/x86_64/kickstart"
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts=''
+# System language
+lang en_US.UTF-8
+# Network information
+network  --bootproto=dhcp --device=eth0 --ipv6=auto --activate
+network  --hostname=OnePiece
+# User password
+user --name=acefei --groups=wheel --iscrypted --password=$6$Juxd7fy/Avg0DMeq$MmoRvrwn4sdH/TeFBijZ8R5UPJdrzhFvK.DVmCSVwA6CfuuqAR0XxGx.e0vtPKFSvEXrq2DDlyFlzVtP/02Gc0
+# Do not configure the X Window System
+skipx
+# System services
+services --enabled="chronyd"
+# System timezone
+timezone UTC
+
+%packages
+@core
+@development
+@network-tools
+ncurses-devel
+python3-devel
+net-tools
+nfs-utils
+cifs-utils
+tmux
+podman
+git
+wget
+vim
+%end
+
+%post --log=/root/ks-post-log
+# Extra packages installation
+yum install -y epel-release
+pip3 install podman-compose
+
+# Set bash profile 
+curl -sL https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash
+
+# Currently, tig is not available in centos epel, so install it with make 
+ver=$(basename $(curl -sSL -w '%{url_effective}' https://github.com/jonas/tig/releases/latest -o /dev/null))
+curl -L https://github.com/jonas/tig/releases/download/$ver/$ver.tar.gz | tar xz && cd tig-* && make && make install prefix=/usr/local
+
+# Set NOPASSWORD for the user in group wheel 
+sed -i '/# %wheel/s/# //' /etc/sudoers
+%end
