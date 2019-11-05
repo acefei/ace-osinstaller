@@ -1,4 +1,4 @@
-#### Contents of the preconfiguration file (for buster)
+#### Contents of the preconfiguration file (for stretch)
 ### Localization
 # Preseeding only locale sets language, country and locale.
 d-i debian-installer/locale string en_US
@@ -11,7 +11,11 @@ d-i debian-installer/locale string en_US
 #d-i localechooser/supported-locales multiselect en_US.UTF-8, nl_NL.UTF-8
 
 # Keyboard selection.
+# Disable automatic (interactive) keymap detection.
+d-i console-setup/ask_detect boolean false
 d-i keyboard-configuration/xkb-keymap select us
+# To select a variant of the selected layout:
+#d-i keyboard-configuration/xkb-keymap select us(dvorak)
 # d-i keyboard-configuration/toggle select No toggling
 
 ### Network configuration
@@ -24,8 +28,7 @@ d-i keyboard-configuration/xkb-keymap select us
 # skip displaying a list if there is more than one interface.
 d-i netcfg/choose_interface select auto
 
-# To pick a particular interface instead:
-#d-i netcfg/choose_interface select eth1
+
 
 # To set a different link detection timeout (default is 3 seconds).
 # Values are interpreted as seconds.
@@ -91,23 +94,33 @@ d-i netcfg/wireless_wep string
 #d-i network-console/authorized_keys_url string http://10.0.0.1/openssh-key
 #d-i network-console/password password r00tme
 #d-i network-console/password-again password r00tme
+# Use this instead if you prefer to use key-based authentication
+#d-i network-console/authorized_keys_url http://host/authorized_keys
 
 ### Mirror settings
 # If you select ftp, the mirror/country string does not need to be set.
 #d-i mirror/protocol string ftp
 d-i mirror/country string manual
-d-i mirror/http/hostname string http.us.debian.org
-d-i mirror/http/directory string /debian
+d-i mirror/http/hostname string archive.ubuntu.com
+d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string
 
+# Alternatively: by default, the installer uses CC.archive.ubuntu.com where
+# CC is the ISO-3166-2 code for the selected country. You can preseed this
+# so that it does so without asking.
+#d-i mirror/http/mirror select CC.archive.ubuntu.com
+
 # Suite to install.
-#d-i mirror/suite string testing
+#d-i mirror/suite string stretch
 # Suite to use for loading installer components (optional).
-#d-i mirror/udeb/suite string testing
+#d-i mirror/udeb/suite string stretch
+# Components to use for loading installer components (optional).
+#d-i mirror/udeb/components multiselect main, restricted
 
 ### Account setup
 # Skip creation of a root account (normal user account will be able to
-# use sudo).
+# use sudo). The default is false; preseed this to true if you want to set
+# a root password.
 d-i passwd/root-login boolean false
 # Alternatively, to skip creation of a normal user account.
 #d-i passwd/make-user boolean false
@@ -128,10 +141,16 @@ d-i passwd/username string acefei
 d-i passwd/user-password-crypted password $6$Juxd7fy/Avg0DMeq$MmoRvrwn4sdH/TeFBijZ8R5UPJdrzhFvK.DVmCSVwA6CfuuqAR0XxGx.e0vtPKFSvEXrq2DDlyFlzVtP/02Gc0
 # Create the first user with the specified UID instead of the default.
 #d-i passwd/user-uid string 1010
+# The installer will warn about weak passwords. If you are sure you know
+# what you're doing and want to override it, uncomment this.
+#d-i user-setup/allow-password-weak boolean true
 
 # The user account will be added to some standard initial groups. To
 # override that, use this.
 #d-i passwd/user-default-groups string audio cdrom video
+
+# Set to true if you want to encrypt the first user's home directory.
+d-i user-setup/encrypt-home boolean false
 
 ### Clock and time zone setup
 # Controls whether or not the hardware clock is set to UTC.
@@ -146,17 +165,30 @@ d-i clock-setup/ntp boolean true
 # NTP server to use. The default is almost always fine here.
 #d-i clock-setup/ntp-server string ntp.example.com
 
+### i386 specific disk storage
+# Activate DASD disks
+#d-i s390-dasd/dasd string 0.0.0200,0.0.0300,0.0.0400
+
+# DASD configuration; by default dasdfmt (low-level format) if needed
+#d-i s390-dasd/auto-format boolean true
+#d-i s390-dasd/force-format boolean true
+
+# zFCP activation and configuration
+# d-i s390-zfcp/zfcp string 0.0.1b34:0x400870075678a1b2:0x201480c800000000, \
+#                           0.0.1b34:0x400870075679a1b2:0x201480c800000000
+
 ### Partitioning
 ## Partitioning example
 # If the system has free space you can choose to only partition that space.
 # This is only honoured if partman-auto/method (below) is not set.
+# Alternatives: custom, some_device, some_device_crypto, some_device_lvm.
 #d-i partman-auto/init_automatically_partition select biggest_free
 
 # Alternatively, you may specify a disk to partition. If the system has only
 # one disk the installer will default to using that, but otherwise the device
 # name must be given in traditional, non-devfs format (so e.g. /dev/sda
 # and not e.g. /dev/discs/disc0/disc).
-# You can change this as xvd* are simply the Xen disk storage devices
+# For example, to use the first SCSI/SATA hard disk:
 d-i partman-auto/disk string /dev/xvda
 # In addition, you'll need to specify the method to use.
 # The presently available methods are:
@@ -174,6 +206,12 @@ d-i partman-md/device_remove_md boolean true
 # And the same goes for the confirmation to write the lvm partitions.
 d-i partman-lvm/confirm boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
+
+# For LVM partitioning, you can select how much of the volume group to use
+# for logical volumes.
+#d-i partman-auto-lvm/guided_size string max
+#d-i partman-auto-lvm/guided_size string 10GB
+#d-i partman-auto-lvm/guided_size string 50%
 
 # You can choose one of the three predefined partitioning recipes:
 # - atomic: all files in one partition
@@ -206,6 +244,10 @@ d-i partman-auto/choose_recipe select atomic
 #                      method{ swap } format{ }                \
 #              .
 
+# If you just want to change the default filesystem from ext3 to something
+# else, you can do that without providing a full recipe.
+#d-i partman/default_filesystem string ext4
+
 # The full recipe format is documented in the file partman-auto-recipe.txt
 # included in the 'debian-installer' package or available from D-I source
 # repository. This also documents how to specify settings such as file
@@ -218,9 +260,6 @@ d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
-
-# When disk encryption is enabled, skip wiping the partitions beforehand.
-#d-i partman-auto-crypto/erase_disks boolean false
 
 ## Partitioning using RAID
 # The method should be set to "raid".
@@ -279,6 +318,11 @@ d-i partman/confirm_nooverwrite boolean true
 #d-i partman/mount_style select uuid
 
 ### Base system installation
+# Configure a path to the preconfigured base filesystem. This can be used to
+# specify a path for the installer to retrieve the filesystem image that will
+# be deployed to disk and used as a base system for the installation.
+#d-i live-installer/net-image string /install/filesystem.squashfs
+ 
 # Configure APT to not install recommended packages by default. Use of this
 # option can result in an incomplete system and should only be used by very
 # experienced users.
@@ -286,22 +330,25 @@ d-i partman/confirm_nooverwrite boolean true
 
 # The kernel image (meta) package to be installed; "none" can be used if no
 # kernel is to be installed.
-#d-i base-installer/kernel/image string linux-image-686
+#d-i base-installer/kernel/image string linux-generic
 
 ### Apt setup
-# You can choose to install non-free and contrib software.
-#d-i apt-setup/non-free boolean true
-#d-i apt-setup/contrib boolean true
+# You can choose to install restricted and universe software, or to install
+# software from the backports repository.
+#d-i apt-setup/restricted boolean true
+#d-i apt-setup/universe boolean true
+#d-i apt-setup/backports boolean true
 # Uncomment this if you don't want to use a network mirror.
 #d-i apt-setup/use_mirror boolean false
 # Select which update services to use; define the mirrors to be used.
 # Values shown below are the normal defaults.
-#d-i apt-setup/services-select multiselect security, updates
-#d-i apt-setup/security_host string security.debian.org
+#d-i apt-setup/services-select multiselect security
+#d-i apt-setup/security_host string security.ubuntu.com
+#d-i apt-setup/security_path string /ubuntu
 
 # Additional repositories, local[0-9] available
 #d-i apt-setup/local0/repository string \
-#       http://local.server/debian stable main
+#       http://local.server/ubuntu stretch main
 #d-i apt-setup/local0/comment string local server
 # Enable deb-src lines
 #d-i apt-setup/local0/source boolean true
@@ -320,28 +367,42 @@ d-i partman/confirm_nooverwrite boolean true
 
 
 ### Package selection
-# text mode without desktop environment
-tasksel tasksel/first multiselect none
+tasksel tasksel/first multiselect standard
+#tasksel tasksel/first multiselect lamp-server, print-server
+#tasksel tasksel/first multiselect kubuntu-desktop
 
 # Individual additional packages to install
-d-i pkgsel/include string openssh-server \
-                          build-essential \
+d-i pkgsel/include string openssh-server build-essential \
                           cifs-utils nfs-common \
                           net-tools \
                           python3-dev \
-                          curl \
+                          wget curl \
                           vim \
                           tig \
-                          tmux 
+                          tmux
+
 # Whether to upgrade packages after debootstrap.
 # Allowed values: none, safe-upgrade, full-upgrade
 d-i pkgsel/upgrade select safe-upgrade
+
+# Language pack selection
+d-i pkgsel/language-packs multiselect en
+
+# Policy for applying updates. May be "none" (no automatic updates),
+# "unattended-upgrades" (install security updates automatically), or
+# "landscape" (manage system with Landscape).
+d-i pkgsel/update-policy select none
 
 # Some versions of the installer can report back on what software you have
 # installed, and what software you use. The default is not to report back,
 # but sending reports helps the project determine what software is most
 # popular and include it on CDs.
 #popularity-contest popularity-contest/participate boolean false
+
+# By default, the system's locate database will be updated after the
+# installer has finished installing most packages. This may take a while, so
+# if you don't want it, you can set this to "false" to turn it off.
+#d-i pkgsel/updatedb boolean true
 
 ### Boot loader installation
 # Grub is the default boot loader (for x86). If you want lilo installed
@@ -416,6 +477,7 @@ d-i finish-install/reboot_in_progress note
 
 #### Advanced options
 ### Running custom commands during the installation
+## i386 Preseed Example
 # d-i preseeding is inherently not secure. Nothing in the installer checks
 # for attempts at buffer overflows or other exploits of the values of a
 # preconfiguration file like this one. Only use preconfiguration files from

@@ -11,9 +11,10 @@ DISTRO_INFO = {
             'answerfile': 'url=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/preseed',
             'kernel_args': 'auto=true priority=critical'
             },
-        'ubuntu1804': {
-            'description': 'Ubuntu Bionic (amd64)',
-            'url': 'http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64',
-            'kernel_args': 'vga=normal'
+        'ubuntu': {
+            'description': 'Ubuntu',
+            'url': 'http://archive.ubuntu.com/ubuntu/dists/eoan/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/',
+            'answerfile': 'url=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/autoinstall',
+            'kernel_args': 'auto=true priority=critical'
             }
         }
