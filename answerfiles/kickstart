@@ -37,7 +37,6 @@ net-tools
 nfs-utils
 cifs-utils
 tmux
-podman
 git
 wget
 vim
@@ -46,7 +45,6 @@ vim
 %post --log=/root/ks-post-log
 # Extra packages installation
 yum install -y epel-release
-pip3 install podman-compose
 
 # Set bash profile 
 curl -sL https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash

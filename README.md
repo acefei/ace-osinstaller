@@ -16,6 +16,15 @@ mtools
 mkisofs 
 ```
 
+Note: there are something specials in answerfile:
+1. Use /dev/xvda which is simply the Xen disk storage devices as disk partition , you need to update it if you use other Hypervisor
+2. Use Text mode instead of desktop environment
+3. Create an encrypted password for the user configuration in answerfile
+```
+python -c 'import crypt,getpass;pw=getpass.getpass();print(crypt.crypt(pw) if (pw==getpass.getpass("Confirm: ")) else exit())'
+```
+4. Install [ace-profile](https://github.com/acefei/ace-profile) in the post install stage
+
 ### Installing
 
 To Build an iPXE bootable CD-ROM image using:
@@ -31,7 +40,5 @@ Or put it into an ISO library for the VM installation on XenServer/Vmware/KVM
 ## Acknowledgments
 
 * [iPXE Download](http://ipxe.org/download)
-* To create an encrypted password for the user configuration in kickstart
-```
-python -c 'import crypt,getpass;pw=getpass.getpass();print(crypt.crypt(pw) if (pw==getpass.getpass("Confirm: ")) else exit())'
-```
+* [Error building ISO](https://forum.ipxe.org/showthread.php?tid=8080)
+* [Debian (stable) preseed example](https://www.debian.org/releases/stable/example-preseed.txt)

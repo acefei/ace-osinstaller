@@ -8,7 +8,7 @@ DISTRO_INFO = {
         'debian-stable': {
             'description': 'Debian Stable',
             'url': 'http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64',
-            'answerfile': 'url=https://www.debian.org/releases/stable/example-preseed.txt',
+            'answerfile': 'url=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/preseed',
             'kernel_args': 'auto=true priority=critical'
             },
         'ubuntu1804': {
