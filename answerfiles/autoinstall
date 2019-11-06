@@ -497,4 +497,4 @@ d-i finish-install/reboot_in_progress note
 # still a usable /target directory. You can chroot to /target and use it
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
-d-i preseed/late_command string wget -qO- https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash
+d-i preseed/late_command string in-target su - acefei -c "wget -qO- https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash"

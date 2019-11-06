@@ -46,12 +46,12 @@ vim
 # Extra packages installation
 yum install -y epel-release
 
-# Set bash profile 
-curl -sL https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash
-
 # Currently, tig is not available in centos epel, so install it with make 
 ver=$(basename $(curl -sSL -w '%{url_effective}' https://github.com/jonas/tig/releases/latest -o /dev/null))
 curl -L https://github.com/jonas/tig/releases/download/$ver/$ver.tar.gz | tar xz && cd tig-* && make && make install prefix=/usr/local
+
+# Set bash profile for user
+su - acefei -c "wget -qO- https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash"
 
 # Set NOPASSWORD for the user in group wheel 
 sed -i '/# %wheel/s/# //' /etc/sudoers
