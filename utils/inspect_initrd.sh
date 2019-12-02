@@ -34,3 +34,4 @@ case $filetype in
 esac
 
 echo "---> You can inspect initrd in $setup_path"
+echo "---> Repack initrd image running `find . 2>/dev/null | cpio -o -H newc | xz -9 --format=lzma > /tmp/initrd.img` in $setup_path"

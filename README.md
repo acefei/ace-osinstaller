@@ -52,6 +52,7 @@ Or put it into an ISO library for the VM installation on XenServer/Vmware/KVM
 * [Ubuntu (stable) preseed example](https://help.ubuntu.com/stable/installation-guide/example-preseed.txt)
 * [Automated Server Installs for 20.04](https://wiki.ubuntu.com/FoundationsTeam/AutomatedServerInstalls#Differences_from_debian-installer_preseeding)
 * [How to unpack/uncompress and repack/re-compress an initial ramdisk (initrd/initramfs) boot image file](https://access.redhat.com/solutions/24029)
+  * If ran into the err `No TPM chip found, activating TPM-bypass!`, please run `find . 2>/dev/null | cpio -o -H newc | xz -9 --format=lzma > /tmp/initrd.img` to repack, instead of the one in the link above.
 
 ## Known Issues
 * Failed to retrieve preconfiguration file ubuntu 1804 as wget can not download https url without `--no-check-certificate` 
