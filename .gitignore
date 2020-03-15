@@ -1,2 +1,6 @@
-workspace/
 __pycache__
+*.iso
+*.pyc
+output/
+www/*/
+boot.ipxe
