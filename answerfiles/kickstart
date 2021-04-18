@@ -2,9 +2,22 @@
 ignoredisk --only-use=@DISK@
 # System bootloader configuration
 bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=@DISK@
-autopart --type=lvm
 # Partition clearing information
 clearpart --all --initlabel --drives=@DISK@
+
+# Disk partitioning information
+# Partition    Size             Name
+# /boot        512MB            /boot
+# /            > 5GB            lv_root
+# swap         recommanded      lv_swap
+# /home        > 2GB            lv_home
+part /boot --fstype ext4 --size=512
+part pv.01 --size=1 --grow
+volgroup VolGroup --pesize=4096 pv.01
+logvol swap --fstype=swap --name=lv_swap --vgname=VolGroup --recommended
+logvol / --fstype=xfs --name=lv_root --vgname=VolGroup --size=5120  --grow
+logvol /home --fstype=xfs --name=lv_home --vgname=VolGroup --size=2048 --grow
+
 # Use text mode install
 text
 # AppStream is automatically added if redhat major is 8 or higher, URL contains "BaseOS" and AppStream repo is missing
@@ -38,13 +51,13 @@ git
 # Extra packages installation
 yum install -y epel-release
 
-# Currently, tig is not available in centos epel, so install it with make 
+# Currently, tig is not available in centos epel, so install it with make
 ver=$(basename $(curl -sSL -w '%{url_effective}' https://github.com/jonas/tig/releases/latest -o /dev/null))
 curl -L https://github.com/jonas/tig/releases/download/$ver/$ver.tar.gz | tar xz && cd tig-* && make && make install prefix=/usr/local
 
 # Set bash profile for user
 su - acefei -c "wget -qO- https://raw.githubusercontent.com/acefei/ace-profile/master/installer/install.sh | bash"
 
-# Set NOPASSWORD for the user in group wheel 
+# Set NOPASSWORD for the user in group wheel
 sed -i '/# %wheel/s/# //' /etc/sudoers
 %end
