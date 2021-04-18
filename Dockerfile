@@ -1,6 +1,6 @@
-FROM buildpack-deps:18.04 AS base
+FROM public.ecr.aws/lts/ubuntu AS base
 # Note: using isolinux instead of syslinux
-RUN apt update && apt install -y mkisofs isolinux
+RUN apt update && apt install -y git build-essential liblzma-dev mkisofs isolinux
 # Get iPXE source and Enable extra supports
 WORKDIR /workspace
 # Use a stable version
