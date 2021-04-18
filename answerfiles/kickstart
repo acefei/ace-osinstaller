@@ -1,11 +1,10 @@
 #version=RHEL8
-# You can change this as xvd* are simply the Xen disk storage devices
-ignoredisk --only-use=xvda
+ignoredisk --only-use=@DISK@
 # System bootloader configuration
-bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=xvda
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=@DISK@
 autopart --type=lvm
 # Partition clearing information
-clearpart --all --initlabel --drives=xvda
+clearpart --all --initlabel --drives=@DISK@
 # Use text mode install
 text
 # AppStream is automatically added if redhat major is 8 or higher, URL contains "BaseOS" and AppStream repo is missing
@@ -18,6 +17,9 @@ lang en_US.UTF-8
 # Network information
 network  --bootproto=dhcp --device=eth0 --ipv6=auto --activate
 network  --hostname=OnePiece
+firewall --service=ssh
+firewall --enabled
+
 # User password
 user --name=acefei --groups=wheel --iscrypted --password=$6$Juxd7fy/Avg0DMeq$MmoRvrwn4sdH/TeFBijZ8R5UPJdrzhFvK.DVmCSVwA6CfuuqAR0XxGx.e0vtPKFSvEXrq2DDlyFlzVtP/02Gc0
 # Do not configure the X Window System
@@ -28,18 +30,8 @@ services --enabled="chronyd"
 timezone UTC
 
 %packages
-@core
-@development
-@network-tools
-ncurses-devel
-python3-devel
-net-tools
-nfs-utils
-cifs-utils
-tmux
-git
 wget
-vim
+git
 %end
 
 %post --log=/root/ks-post-log

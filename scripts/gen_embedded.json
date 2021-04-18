@@ -1,20 +1,20 @@
 {
     "centos8": {
         "description": "CentOS 8",
-        "url": "http://mirror.centos.org/centos/8/BaseOS/x86_64/os/images/pxeboot",
-        "answerfile": "inst.ks=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/kickstart",
+        "base_url": "http://mirror.centos.org/centos/8/BaseOS/x86_64/os/images/pxeboot",
+        "answerfile": "inst.ks=http://{ip}/kickstart",
         "kernel_args": "inst.repo=http://mirror.centos.org/centos/8/BaseOS/x86_64/kickstart inst.text ip=dhcp ipv6.disable"
     },
     "debian-stable": {
         "description": "Debian Stable",
-        "url": "http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64",
-        "answerfile": "url=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/preseed",
+        "base_url": "http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64",
+        "answerfile": "url=http://{ip}/preseed",
         "kernel_args": "auto=true priority=critical"
     },
     "ubuntu": {
         "description": "Ubuntu",
-        "url": "http://archive.ubuntu.com/ubuntu/dists/eoan/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/",
-        "answerfile": "url=https://raw.githubusercontent.com/acefei/ace-osinstaller/master/answerfiles/autoinstall",
+        "base_url": "http://archive.ubuntu.com/ubuntu/dists/eoan/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/",
+        "answerfile": "url=http://{ip}/autoinstall",
         "kernel_args": "auto=true priority=critical"
     }
 }

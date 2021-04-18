@@ -18,6 +18,8 @@ start_server() {
     cd $SCRIPTDIR
     for iso in $(find $SCRIPTDIR -name '*.iso')
     do
+        echo $iso | grep 'ipxe-' && continue
+
         distro=$(basename $iso)
         distro_dir=${distro%%.iso}
         mkdir -p $distro_dir

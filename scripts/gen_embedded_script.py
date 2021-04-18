@@ -62,10 +62,10 @@ def render_isolinux_cfg():
                 initrd = "initrd.gz"
 
         if not (kernel and initrd):
-            raise Exception(f"please add 'kernel' and 'initrd' (relative path against 'url') for the new distro in {config_file}")
+            raise Exception(f"please add 'kernel' and 'initrd' (relative path against 'base_url') for the new distro in {config_file}")
 
-        url = v["url"]
-        answerfile = answerfile = v["answerfile"] if v.get("answerfile") else ""
+        url = v["base_url"]
+        answerfile = v["answerfile"].format(ip=os.environ['HTTP_SERVER_IP']) if v.get("answerfile") else ""
         kernel_args = "{} {}".format(v["kernel_args"], answerfile)
         isolinux_cfgs.extend(ISOLINUX_CFG_TEMPLATE.format(**locals()))
     return "".join(isolinux_cfgs)

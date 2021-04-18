@@ -11,10 +11,10 @@ RUN git clone -q $GIT_TAG --single-branch --depth=1 http://git.ipxe.org/ipxe.git
 
 FROM base AS build
 WORKDIR /workspace
-ARG HTTP_SERVER
+ARG HTTP_SERVER_IP
 # Note: Put embedded script into ipxe/src
-RUN echo "#!ipxe\ndhcp\nchain http://$HTTP_SERVER/boot.ipxe" > ipxe/src/chain.ipxe
-RUN cd ipxe/src && make bin/ipxe.iso EMBED=chain.ipxe
+RUN echo "#!ipxe\ndhcp\nchain http://$HTTP_SERVER_IP/boot.ipxe" > ipxe/src/chain.ipxe
+RUN cd ipxe/src && make bin/ipxe.iso EMBED=chain.ipxe && cp bin/ipxe.iso /tmp/ipxe-${HTTP_SERVER_IP}.iso
 
 
 FROM base AS iso
@@ -22,5 +22,5 @@ WORKDIR /iso
 VOlUME /iso
 # Note: put artifact to volume dir using CMD
 # rather than COPY or RUN that only executes command in the intermediate layer 
-COPY --from=build /workspace/ipxe/src/bin/ipxe.iso /tmp
-CMD [ "cp", "/tmp/ipxe.iso", "/iso/" ]
+COPY --from=build /tmp /tmp
+CMD [ "cp", "-r","/tmp/.", "/iso/" ]

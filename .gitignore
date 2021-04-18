@@ -1,6 +1,7 @@
 __pycache__
 *.iso
 *.pyc
-output/
-www/*/
+.*.swp
+output/*
 boot.ipxe
+*.iso

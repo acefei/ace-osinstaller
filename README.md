@@ -19,11 +19,14 @@ iPXE> chain http://<your http server ip>/boot.ipxe
 ```
 
 #### Build your own ipxe.iso
-Preferred chain loading that we don't build `ipxe.iso` everytime unless HTTP_SERVER changed and only need to update `boot.ipxe` on the fly. 
 ```
-make http_server HTTP_SERVER=<the ip for fetching boot.ipxe over HTTP>
+# Specified a IP for fetching boot.ipxe over HTTP. If bypass this variable, it will use default IP
+make iso HTTP_SERVER_IP=<x.x.x.x>
+
+# Start local http server with sudo priviledge.
+make http_server
 ```
-> There are two artifacts, `output/ipxe.iso` and `www/boot.ipxe` and it will launch a http server against www/ dir 
+> There are two artifacts, `output/ipxe.iso` and `output/boot.ipxe` and it will launch a http server against output/ dir 
 Then, burn ipxe.iso onto a blank CD-ROM or DVD-ROM or put it into the ISO library for the VM installation on XenServer/Vmware/KVM
 
 For more details usage, just run `make` to get help.
@@ -41,9 +44,9 @@ You can find available distro configuration in [gen_embedded.json](https://githu
         "kernel_args": "<literal as the key name>"
     },
 ```
-2. Put new distro iso into [www](https://github.com/acefei/ace-osinstaller/tree/master/www) dir
+2. Put new distro iso into output dir which created by `make output`
 3. Restart http server `make http_server`
-4. If wanted to tweak the kernel args, we only need to change it in `www/boot.ipxe` instead of building `ipxe.iso` again because of chain loading feature.
+4. If wanted to tweak the kernel args, we only need to change it in `output/boot.ipxe` instead of building `ipxe.iso` again because of chain loading feature.
 
 <details>
   <summary>There are something specials in answerfile</summary>
