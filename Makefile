@@ -27,8 +27,8 @@ output:
 	@mkdir -p -m777 $@
 
 iso: output build ## build ipxe.iso to output dir
-	@docker run --rm -v $(PWD)/output:/$@ $@
-	@echo "artifact is available on $$(sha256sum output/ipxe-*.iso| awk '{print $$2,$$1}')"
+	@docker run --rm -v $(PWD)/$<:/$@ $@
+	@echo "artifact is available on $$(sha256sum output/ipxe.iso| awk '{print $$2,$$1}')"
 
 boot_ipxe: output ## build boot.ipxe to output dir
 	@python3 scripts/gen_embedded_script.py $<
