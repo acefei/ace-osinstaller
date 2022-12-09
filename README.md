@@ -62,20 +62,5 @@ You can find available distro configuration in [netboot.json](https://github.com
  ```
 </details>
 
-## How to dump answerfile infomation after OS installed
-### Centos
-- cat /root/anaconda-ks.cfg
-### Debian/Ubuntu
-1. cat /var/log/installer/cdebconf/questions.dat
-2. install `debconf-utils` and run `debconf-get-selections -installer` to dump preseed
-
-## Acknowledgments
-
-* [iPXE Download](http://ipxe.org/download)
-* [The system initialization(Debian)](https://www.debian.org/doc/manuals/debian-reference/ch03.en.html) 
-* [Error building ISO](https://forum.ipxe.org/showthread.php?tid=8080)
-* [Debian (stable) preseed example](https://www.debian.org/releases/stable/example-preseed.txt)
-* [Ubuntu (stable) preseed example](https://help.ubuntu.com/stable/installation-guide/example-preseed.txt)
-* [Automated Server Installs for 20.04](https://wiki.ubuntu.com/FoundationsTeam/AutomatedServerInstalls#Differences_from_debian-installer_preseeding)
-* [How to unpack/uncompress and repack/re-compress an initial ramdisk (initrd/initramfs) boot image file](https://access.redhat.com/solutions/24029)
-  * If ran into the err `No TPM chip found, activating TPM-bypass!`, please run `find . 2>/dev/null | cpio -o -H newc | xz -9 --format=lzma > /tmp/initrd.img` to repack, instead of the one in the link above.
+## Further Read
+[docs](https://github.com/acefei/ace-osinstaller/blob/master/docs)
