@@ -12,10 +12,8 @@ RUN wget  https://github.com/ipxe/ipxe/archive/refs/heads/master.zip \
 FROM base AS build
 WORKDIR /workspace
 ARG SERVER_ADDR
-# Note: Put embedded script into ipxe/src
-#RUN echo "#!ipxe\nshell" > ipxe/src/embed.ipxe && \
-RUN echo "#!ipxe\ndhcp\nchain $SERVER_ADDR/chainload.ipxe" > ipxe/src/embed.ipxe && \
-    #cd ipxe/src && make bin/ipxe.iso
+COPY scripts/embed.ipxe ipxe/src
+RUN sed -i 's#@SERVER_ADDR@#'"${SERVER_ADDR}"'#p' ipxe/src/embed.ipxe && \
     cd ipxe/src && make bin/ipxe.iso EMBED=embed.ipxe
 
 

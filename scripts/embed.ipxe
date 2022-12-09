@@ -1,0 +1,20 @@
+#!ipxe
+:vars
+set chain-addr @SERVER_ADDR@/chainload.ipxe
+
+:netconfig
+dhcp net0 || goto ipxeshell
+
+:prompt
+prompt --key 0x02 --timeout 3000 Press Ctrl-B for the iPXE command line... && goto ipxeshell ||
+chain ${chain-addr} && goto exit ||
+echo
+echo Failed to boot to: ${chain-addr}
+echo 
+echo Type help for commands.
+
+:ipxeshell
+shell
+
+:exit
+exit
