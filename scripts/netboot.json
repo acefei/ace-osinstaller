@@ -2,19 +2,19 @@
     "centos8": {
         "description": "CentOS 8",
         "base_url": "http://mirror.centos.org/centos/8/BaseOS/x86_64/os/images/pxeboot",
-        "answerfile": "inst.ks=http://{ip}/kickstart",
+        "answerfile": "inst.ks={ip}/kickstart",
         "kernel_args": "inst.repo=http://mirror.centos.org/centos/8/BaseOS/x86_64/kickstart inst.text ip=dhcp ipv6.disable"
     },
     "debian-stable": {
         "description": "Debian Stable",
         "base_url": "http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64",
-        "answerfile": "url=http://{ip}/preseed",
+        "answerfile": "url={ip}/preseed",
         "kernel_args": "auto=true priority=critical"
     },
     "ubuntu": {
-        "description": "Ubuntu",
-        "base_url": "http://archive.ubuntu.com/ubuntu/dists/eoan/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/",
-        "answerfile": "url=http://{ip}/autoinstall",
+        "description": "Ubuntu Legacy",
+        "base_url": "https://mirrors.ustc.edu.cn/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64",
+        "answerfile": "url={ip}/autoinstall",
         "kernel_args": "auto=true priority=critical"
     }
 }

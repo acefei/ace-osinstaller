@@ -5,7 +5,8 @@ import json
 
 ################## TEMPLATES #################
 IPXE_TEMPLATE = """#!ipxe
-dhcp
+#dhcp
+
 #set net0/ip 192.168.1.125
 #set net0/netmask 255.255.255.0
 #set net0/gateway 192.168.30.1
@@ -40,7 +41,7 @@ boot
 ################## TEMPLATES END #################
 
 WORKDIR = os.path.split(os.path.realpath(__file__))[0]
-config_file = 'gen_embedded.json'
+config_file = 'netboot.json'
 
 def load_config():
     with open(os.path.join(WORKDIR, config_file)) as load_fp:
@@ -65,7 +66,7 @@ def render_isolinux_cfg():
             raise Exception(f"please add 'kernel' and 'initrd' (relative path against 'base_url') for the new distro in {config_file}")
 
         url = v["base_url"]
-        answerfile = v["answerfile"].format(ip=os.environ['HTTP_SERVER_IP']) if v.get("answerfile") else ""
+        answerfile = v["answerfile"].format(ip=os.environ['SERVER_ADDR']) if v.get("answerfile") else ""
         kernel_args = "{} {}".format(v["kernel_args"], answerfile)
         isolinux_cfgs.extend(ISOLINUX_CFG_TEMPLATE.format(**locals()))
     return "".join(isolinux_cfgs)
@@ -78,7 +79,7 @@ def main():
     distro_isolinux_cfg = render_isolinux_cfg()
     output = IPXE_TEMPLATE.format(**locals())
     dest = sys.argv[1] if len(sys.argv) == 2 else '.'
-    with open(os.path.join(os.path.realpath(dest), "boot.ipxe"), "w") as f:
+    with open(os.path.join(os.path.realpath(dest), "chainload.ipxe"), "w") as f:
         f.write(output)
 
 

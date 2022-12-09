@@ -15,25 +15,23 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-export HTTP_SERVER_IP ?= $(shell ./scripts/default_ip)
+export SERVER_ADDR ?= http://$(shell ./scripts/default_ip)
 DEFAULT_DISK = $(shell ./scripts/default_disk)
 DOCKER_BUILD = DOCKER_BUILDKIT=1 docker build $(BUILD_ARGS) -t $@ --target $@ $(<D)
-
-build: BUILD_ARGS = --build-arg HTTP_SERVER_IP=$(HTTP_SERVER_IP)
-build: Dockerfile
-	$(DOCKER_BUILD)
 
 output:
 	@mkdir -p -m777 $@
 
-iso: output build ## build ipxe.iso to output dir
+iso: BUILD_ARGS = --build-arg SERVER_ADDR=$(SERVER_ADDR)
+iso: output Dockerfile ## build osinstaller.iso to output dir
+	$(DOCKER_BUILD)
 	@docker run --rm -v $(PWD)/$<:/$@ $@
-	@echo "artifact is available on $$(sha256sum output/ipxe.iso| awk '{print $$2,$$1}')"
+	@echo "artifact is available on $$(sha256sum output/osinstaller.iso| awk '{print $$2,$$1}')"
 
-boot_ipxe: output ## build boot.ipxe to output dir
-	@python3 scripts/gen_embedded_script.py $<
+chainload_ipxe: output ## build chainload.ipxe to output dir
+	@python3 scripts/gen_osinstaller_script.py $<
 
-answerfile: output
+answerfile: output ## build answerfiles
 	@cp -rf answerfiles/. $< && sed -i 's/@DISK@/$(DEFAULT_DISK)/g' $</*
 
 http_server: iso boot_ipxe answerfile ## start http server based on output dir
@@ -44,3 +42,4 @@ mount_iso: boot_ipxe answerfile ## mount local iso in www/ and start http server
 
 clean:
 	@sudo rm -rf $(PWD)/output
+	@docker rmi build iso

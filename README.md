@@ -1,7 +1,7 @@
 # ace-osinstaller
 To use iPXE to setup my own development machine
 
-This repo is used for creating `ipxe.iso` without deploying extra DHCP server/tFTP server.
+This repo is used for creating `osinstaller.iso` without deploying extra DHCP server/tFTP server.
 
 ## Getting Started
 
@@ -10,29 +10,32 @@ Promptly start as long as there is `docker` (curl -fsSL https://get.docker.com |
 
 ### Usage
 #### Use official ipxe.iso
-1. Generate boot.ipxe and put it on http server using `make http_server`
-2. Download official [ipxe.iso](http://boot.ipxe.org/ipxe.iso) and follow the steps on [Quick Start](https://ipxe.org/) into PXE cli 
+1. Generate chainload.ipxe and put it on http server using `make http_server`
+2. Download official [ipxe.iso](http://boot.ipxe.org/ipxe.iso) and follow the steps on [Quick Start](https://ipxe.org/) into PXE cli
 3. Run the following cmd
 ```
 iPXE> dhcp
-iPXE> chain http://<your http server ip>/boot.ipxe
+iPXE> chain http://<server ip>/chainload.ipxe
 ```
+There are limitations to this way:
+- Not able to chain https url
+- Inconvenience to debug without ping/nslookup
 
-#### Build your own ipxe.iso
+#### Build your own ipxe.iso (rename osinstaller.iso for distinction)
 ```
-# Specified a IP for fetching boot.ipxe over HTTP. If bypass this variable, it will use default IP
-make iso HTTP_SERVER_IP=<x.x.x.x>
+# Specified a IP for fetching chainload.ipxe over HTTP. If bypass this variable, it will use default IP
+make iso SERVER_ADDR=http://<server ip>
 
 # Start local http server with sudo priviledge.
 make http_server
 ```
-> There are two artifacts, `output/ipxe.iso` and `output/boot.ipxe` and it will launch a http server against output/ dir 
-Then, burn ipxe.iso onto a blank CD-ROM or DVD-ROM or put it into the ISO library for the VM installation on XenServer/Vmware/KVM
+> There are some artifacts, `osinstaller.iso chainload.ipxe <some answerfile>` and it will launch a http server against output/ dir
+Then, burn osinstaller.iso onto a blank CD-ROM or DVD-ROM or put it into the ISO library for the VM installation on XenServer/Vmware/KVM
 
 For more details usage, just run `make` to get help.
 
 ### Add Extra Distro
-You can find available distro configuration in [gen_embedded.json](https://github.com/acefei/ace-osinstaller/blob/master/scripts/gen_embedded.json)
+You can find available distro configuration in [netboot.json](https://github.com/acefei/ace-osinstaller/blob/master/scripts/netboot.json)
  
 1. Add new section as below for new distro support 
 ```
@@ -46,7 +49,7 @@ You can find available distro configuration in [gen_embedded.json](https://githu
 ```
 2. Put new distro iso into output dir which created by `make output`
 3. Restart http server `make http_server`
-4. If wanted to tweak the kernel args, we only need to change it in `output/boot.ipxe` instead of building `ipxe.iso` again because of chain loading feature.
+4. If wanted to tweak the kernel args, we only need to change it in `output/chainload.ipxe` instead of building `osinstaller.iso` again because of chain loading feature.
 
 <details>
   <summary>There are something specials in answerfile</summary>
@@ -57,7 +60,6 @@ You can find available distro configuration in [gen_embedded.json](https://githu
  ```
    python3 -c 'import crypt,getpass;pw=getpass.getpass();print(crypt.crypt(pw) if (pw==getpass.getpass("Confirm: ")) else exit())'
  ```
-4. Install [ace-profile](https://github.com/acefei/ace-profile) in the post install stage
 </details>
 
 ## How to dump answerfile infomation after OS installed
@@ -77,11 +79,3 @@ You can find available distro configuration in [gen_embedded.json](https://githu
 * [Automated Server Installs for 20.04](https://wiki.ubuntu.com/FoundationsTeam/AutomatedServerInstalls#Differences_from_debian-installer_preseeding)
 * [How to unpack/uncompress and repack/re-compress an initial ramdisk (initrd/initramfs) boot image file](https://access.redhat.com/solutions/24029)
   * If ran into the err `No TPM chip found, activating TPM-bypass!`, please run `find . 2>/dev/null | cpio -o -H newc | xz -9 --format=lzma > /tmp/initrd.img` to repack, instead of the one in the link above.
-
-## Known Issues
-* Failed to retrieve preconfiguration file ubuntu 1804 as wget in busybox can not download https url without `--no-check-certificate`, that need to wait busybox upgrade.
-* Load ipxe.iso error as below, it works perfectly after installing `isolinux` instead of `syslinux`. 
-```
-Boot device: CD-Rom0MB medium detected
-- failure: could not read boot disk
-```
