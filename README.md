@@ -23,6 +23,7 @@ There are limitations to this way:
 
 #### Build your own ipxe.iso (rename osinstaller.iso for distinction)
 ```
+# SERVER_ADDR used to find chainload.ipxe, answerfiles which are created in output dir.
 # Specified a IP for fetching chainload.ipxe over HTTP. If bypass this variable, it will use default IP
 make iso SERVER_ADDR=http://<server ip>
 
@@ -35,16 +36,17 @@ Then, burn osinstaller.iso onto a blank CD-ROM or DVD-ROM or put it into the ISO
 For more details usage, just run `make` to get help.
 
 ### Add Extra Distro
-You can find available distro configuration in [netboot.json](https://github.com/acefei/ace-osinstaller/blob/master/scripts/netboot.json)
+netboot configuration for various linux distro can be found in [netboot.json](https://github.com/acefei/ace-osinstaller/blob/master/scripts/netboot.json)
  
 1. Add new section as below for new distro support 
 ```
 "New Distro Name": {
-        "description": "the details for distro",
-        "url": "http://<your local server ip>",
-        "kernel": "<relative path>/vmlinuz",
-        "initrd": "<relative path>/initrd.img",
-        "kernel_args": "<literal as the key name>"
+        "description": "The description of the distro",
+        "kernel_location": "Location of Kernel/Initrd images, script will further find KERNEL_LOC without this key",
+        "kernel_args": "Kernel parameters",
+        "answerfile": "[Option] Location to answerfile",
+        "kernel": "[Option] kernel image name",
+        "initrd": "[Option] Initrd image name",
     },
 ```
 2. Put new distro iso into output dir which created by `make output`

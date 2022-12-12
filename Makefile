@@ -28,11 +28,12 @@ iso: output Dockerfile ## build osinstaller.iso to output dir
 	@docker run --rm -v $(PWD)/$<:/$@ $@
 	@echo "artifact is available on $$(sha256sum output/osinstaller.iso| awk '{print $$2,$$1}')"
 
-chainload_ipxe: output ## build chainload.ipxe to output dir
+chainload.ipxe: output ## build chainload.ipxe to output dir
 	@python3 scripts/gen_osinstaller_script.py $<
+	@more $</$@
 
 answerfile: output ## build answerfiles
-	@cp -rf answerfiles/. $< && sed -i 's/@DISK@/$(DEFAULT_DISK)/g' $</*
+	@cp answerfiles/* $< && sed -i 's/@DISK@/$(DEFAULT_DISK)/g' $</*
 
 http_server: iso boot_ipxe answerfile ## start http server based on output dir
 	@cp scripts/mount_iso.sh output && bash output/mount_iso.sh

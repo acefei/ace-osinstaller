@@ -6,7 +6,7 @@ WORKDIR /workspace
 RUN wget  https://github.com/ipxe/ipxe/archive/refs/heads/master.zip \
     && unzip master.zip \
     && mv ipxe-master ipxe \
-    && perl -i -pe 's@^(?://#define|#undef)\s+(PING_CMD|NSLOOKUP_CMD|DOWNLOAD_PROTO_HTTPS)(.+)@#define \1\2@' ipxe/src/config/general.h
+    && perl -i -pe 's@^(?://#define|#undef)\s+(PING_CMD|NSLOOKUP_CMD|DOWNLOAD_PROTO_NFS|DOWNLOAD_PROTO_HTTPS)(.+)@#define \1\2@' ipxe/src/config/general.h
 
 
 FROM base AS build

@@ -1,0 +1,34 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu-server
+    password: $6$Juxd7fy/Avg0DMeq$MmoRvrwn4sdH/TeFBijZ8R5UPJdrzhFvK.DVmCSVwA6CfuuqAR0XxGx.e0vtPKFSvEXrq2DDlyFlzVtP/02Gc0
+    realname: Ubuntu User
+    username: ubuntu
+  keyboard:
+    layout: us
+  locale: en_US.UTF-8
+  ssh:
+    allow-pw: true
+    install-server: true
+  # https://curtin.readthedocs.io/en/latest/topics/storage.html#basic-layout
+  storage:
+    # creates an bios_grub partition, /boot partition, and root(/) lvm volume
+    config:
+      - { id: disk-vda, type: disk, ptable: gpt, path: /dev/@DISK@, name: 'main_disk', grub_device: true, wipe: superblock, preserve: false }
+      # Linux boot partition
+      - { id: partition-0, type: partition, device: disk-vda, size: 1MB, flag: bios_grub, number: 1 }
+      - { id: partition-1, type: partition, device: disk-vda, size: 1GB, flag: '', number: 2 }
+      - { id: format-0, type: format, fstype: ext4, volume: partition-1 }
+      # Partition for LVM, VG
+      - { id: partition-2, type: partition, device: disk-vda, size: -1, number: 3 }
+      - { id: lvm_volgroup-0, type: lvm_volgroup, name: ubuntu-vg, devices: [ partition-2 ] }
+      - { id: lvm_partition-0, type: lvm_partition, name: ubuntu-lv, volgroup: lvm_volgroup-0, size: 100% }
+      - { id: format-1, type: format, fstype: ext4, volume: lvm_partition-0 }
+      # Mount points
+      - { id: mount-1, type: mount, path: /, device: format-1 }
+      - { id: mount-0, type: mount, path: /boot, device: format-0 }
+  late-commands:
+    - 'echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /target/etc/sudoers.d/ubuntu-nopw'
+    - chmod 440 /target/etc/sudoers.d/ubuntu-nopw

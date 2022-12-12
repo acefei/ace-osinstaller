@@ -1,0 +1,26 @@
+---
+ubuntu2204-live:
+  description: Ubuntu 22.04 Live
+  kernel: vmlinuz
+  initrd: initrd
+  # casper args usage: https://manpages.ubuntu.com/manpages/latest/man7/casper.7.html
+  # netboot=url by default
+  #kernel_args: ip=dhcp url=https://releases.ubuntu.com/22.04/ubuntu-22.04.1-live-server-amd64.iso
+  # netboot=nfs
+  kernel_args: ip=dhcp netboot=nfs nfsroot=10.158.180.11:/local/scratch/nfs/ubuntu
+  # With 20.04 LTS, we will be completing the transition to the live server installer
+  # and discontinuing the classic server installer based on debian-installer (d-i)
+  # More info: https://ubuntu.com/server/docs/install/autoinstall
+  # {seedfrom} used to find the user-data and meta-data files by nocloud-net provider for cloud-init.
+  # the trailing slash is important, the cloud-init sticks 'meta-data' or 'user-data' right after it, without prepending a forward slash.
+  answerfile: autoinstall ds=nocloud-net;s={seedfrom}/
+debian-stable:
+  description: Debian Stable
+  kernel_location: http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64
+  kernel_args: auto=true priority=critical
+  answerfile: url={seedfrom}/preseed
+ubuntu:
+  description: Ubuntu Legacy
+  kernel_location: https://mirrors.ustc.edu.cn/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
+  kernel_args: auto=true priority=critical
+  answerfile: url={seedfrom}/autoinstall
