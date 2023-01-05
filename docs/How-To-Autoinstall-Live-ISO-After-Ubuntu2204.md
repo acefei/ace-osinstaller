@@ -2,18 +2,31 @@
 # Ubuntu installer ecosystem
 
 ## Debian Installer (d-i)
+
     Classic installer that has been used until 18.04, deprecated in 20.04.
+    
 ## Ubiquity
+
     Graphical [desktop installer](https://wiki.ubuntu.com/Ubiquity). D-i preseed based [auto install](https://wiki.ubuntu.com/UbiquityAutomation) is available. See [manual](http://manpages.ubuntu.com/manpages/jammy/man8/ubiquity.8.html) also. LiveCD can be booted from [nfsroot](https://wiki.ubuntu.com/LiveCDNetboot) ([alternate documentation](https://help.ubuntu.com/community/Installation/LocalNet#A_variation:_Booting_the_.22Live_CD.22_image)). There are a number of [arguments](https://wiki.ubuntu.com/DesktopCDOptions) that you can pass to the installer on the kernel command line.
+    
 ## Ubuntu Desktop Installer
+
     New desktop installer, that replaces Ubiquity. GitHub repo is [here](https://github.com/canonical/ubuntu-desktop-installer). Discussion on [Ubuntu Discourse](https://discourse.ubuntu.com/t/new-desktop-installer-preview-build/24765) about the new preview build. [Refreshing the Ubuntu Desktop Installer](https://discourse.ubuntu.com/t/refreshing-the-ubuntu-desktop-installer/20659) thread.
+    
 ## Subiquity
+
     Server installer frontend. GitHub repo can be [found here](https://github.com/canonical/subiquity).
+    
 ## Casper
+
     An initramfs hook to boot live, preinstalled systems from read-only media. [See Casper manpage](http://manpages.ubuntu.com/manpages/jammy/man7/casper.7.html). Ubiquity desktop and subiquity server install ISO medias relies on it.
+    
 ## Curtin
+
     [The curt installer](https://curtin.readthedocs.io/en/latest/index.html) is written in Python. Subiquity runs curtin in the background.
+    
 ## Cloud-init
+
     Final [configuration](https://cloudinit.readthedocs.io/en/latest/) in the running system. Subiquity creates initial user, sets up ssh authorized key in the target system through cloud-init.
 
 # Download ISO Installer:
